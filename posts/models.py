@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class TimeStampedModel(models.Model):
@@ -18,6 +19,9 @@ class Post(TimeStampedModel):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse("posts:post_detail", kwargs={"pk": self.id})
 
     class Meta:
         db_table = "posts"
