@@ -22,13 +22,18 @@
                 <img src="{% get_media_prefix %}{{ post.image }}" alt="" width="300" height="300">
                 <!-- <p>{{ post.image | cut:'posts/' }}</p> -->
             </div>
-            <b>content</b> : {{ post.content }}
+            <b>content</b> : {{ post.content }} <br>
+            <b>생성 날짜</b> : {{ post.created_at }} <br>
+            <b>수정 날짜</b> : {{ post.updated_at }}
         </li>
         {% endfor %}
     </ul>
     {% else %}
     <p>게시글이 존재하지 않습니다.</p>
     {% endif %}
+    <div style="margin: 100px 150px;">
+        <a href="{% url 'posts:post_upload' %}"><b>업로드하기</b></a>
+    </div>
 </body>
 
 </html>
