@@ -18,12 +18,7 @@ class PostUploadView(generic.FormView):
     success_url = "/"
 
     def form_valid(self, form):
-        post = Post.objects.update_or_create(
-            title=form.cleaned_data["title"],
-            content=form.cleaned_data["content"],
-            image=form.cleaned_data["image"],
-        )
-        form.save(post)
+        form.save()
         return super().form_valid(form)
 
 
@@ -38,6 +33,12 @@ class PostDetailView(generic.DetailView):
         kwargs["image"] = Post.objects.filter(image=post.image)
         kwargs["content"] = Post.objects.filter(content=post.content)
         return super().get_context_data(**kwargs)
+
+
+class PostUpdateView(generic.UpdateView):
+    model = Post
+    form_class = PostUploadForm
+    template_name = "post_update.html"
 
 
 class PostDeleteView(generic.DeleteView):

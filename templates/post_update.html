@@ -7,15 +7,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post Upload</title>
+    <title>Post Update</title>
 </head>
 
 <body>
-    <h1>UPLOAD🖼️</h1>
+    <h1>UPDATE🖼️</h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="submit" value="Post Upload">
+        <input type="submit" value="Post Update">
     </form>
 </body>
 
