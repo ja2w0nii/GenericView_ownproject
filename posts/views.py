@@ -1,8 +1,6 @@
-from django.http import JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
-from django.contrib.contenttypes.models import ContentType
 
 from .models import Post, Comment
 from .forms import PostUploadForm, CommentUploadForm
