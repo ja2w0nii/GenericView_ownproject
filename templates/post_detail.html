@@ -22,7 +22,12 @@
         <b>수정 날짜</b> : {{ post.updated_at }}
     </div>
     <div>
-        <h1 style="margin: 50px 0px;">COMMENT💬</h1>
+        <div style="display: flex; flex-direction: row;">
+            <h1 style="margin: 50px 0px;">COMMENT💬</h1>
+            <div style="margin: 60px 20px;;">
+                <a href="{% url 'posts:comment_upload' pk=post.id %}"><b>댓글 등록하기</b></a>
+            </div>
+        </div>
         {% for comment in comment_list %}
         <li style="margin: 0px 10px;">
             {{ comment.comment }} | {{ comment.updated_at }}
