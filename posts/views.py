@@ -1,5 +1,6 @@
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
 from django.views import generic
 from .models import Post, Comment
 
@@ -17,8 +18,12 @@ class PostUploadView(generic.FormView):
     success_url = "/"
 
     def form_valid(self, form):
-        print(form)
-        form.save()
+        post = Post.objects.update_or_create(
+            title=form.cleaned_data["title"],
+            content=form.cleaned_data["content"],
+            image=form.cleaned_data["image"],
+        )
+        form.save(post)
         return super().form_valid(form)
 
 
@@ -33,3 +38,16 @@ class PostDetailView(generic.DetailView):
         kwargs["image"] = Post.objects.filter(image=post.image)
         kwargs["content"] = Post.objects.filter(content=post.content)
         return super().get_context_data(**kwargs)
+
+
+class PostDeleteView(generic.DeleteView):
+    model = Post
+    success_url = reverse_lazy("posts:post_list")
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        return redirect(self.get_success_url())

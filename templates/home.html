@@ -16,16 +16,26 @@
     {% if post_list %}
     <ul>
         {% for post in post_list %}
-        <li>
-            <a href="{{ post.get_absolute_url }}"><b>title</b> : {{ post.title }}</a>
-            <div style="margin: 20px 5px;">
-                <img src="{% get_media_prefix %}{{ post.image }}" alt="" width="300" height="300">
-                <!-- <p>{{ post.image | cut:'posts/' }}</p> -->
+        <div style="display: flex; flex-direction: row;">
+            <div>
+                <li style="margin: 50px 0px;">
+                    <a href="{{ post.get_absolute_url }}"><b>title</b> : {{ post.title }}</a>
+                    <div style="margin: 20px 5px;">
+                        <img src="{% get_media_prefix %}{{ post.image }}" alt="" width="300" height="300">
+                        <!-- <p>{{ post.image | cut:'posts/' }}</p> -->
+                    </div>
+                    <b>content</b> : {{ post.content }} <br>
+                    <b>생성 날짜</b> : {{ post.created_at }} <br>
+                    <b>수정 날짜</b> : {{ post.updated_at }}
+                </li>
             </div>
-            <b>content</b> : {{ post.content }} <br>
-            <b>생성 날짜</b> : {{ post.created_at }} <br>
-            <b>수정 날짜</b> : {{ post.updated_at }}
-        </li>
+            <div>
+                <form action="{% url 'posts:post_delete' pk=post.id %}" method="post">
+                    {% csrf_token %}
+                    <a href="{% url 'posts:post_delete' pk=post.id %}"><span>삭제</span></a>
+                </form>
+            </div>
+        </div>
         {% endfor %}
     </ul>
     {% else %}
