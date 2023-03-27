@@ -5,7 +5,7 @@ from django.views import generic
 from django.contrib.contenttypes.models import ContentType
 
 from .models import Post, Comment
-from .forms import PostUploadForm, CommentForm
+from .forms import PostUploadForm
 
 
 class PostListView(generic.ListView):
@@ -51,3 +51,22 @@ class PostDeleteView(generic.DeleteView):
         self.object = self.get_object()
         self.object.delete()
         return redirect(self.get_success_url())
+
+
+class CommentDeleteView(generic.DeleteView):
+    model = Comment
+    context_object_name = "comment"
+    success_url = reverse_lazy("posts:post_detail")
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        post_pk = self.object.post.pk
+        success_url = reverse_lazy("posts:post_detail", kwargs={"pk": post_pk})
+        return success_url

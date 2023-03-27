@@ -26,6 +26,12 @@
         {% for comment in comment_list %}
         <li style="margin: 0px 10px;">
             {{ comment.comment }} | {{ comment.updated_at }}
+            <div>
+                <form action="{% url 'posts:comment_delete' pk=comment.id %}" method="post">
+                    {% csrf_token %}
+                    <a href="{% url 'posts:comment_delete' pk=comment.id %}"><span>삭제</span></a>
+                </form>
+            </div>
         </li>
         {% empty %}
         <li style="margin: 30px 0px;">
