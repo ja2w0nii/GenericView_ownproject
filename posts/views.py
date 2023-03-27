@@ -2,9 +2,10 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import generic
-from .models import Post, Comment
+from django.contrib.contenttypes.models import ContentType
 
-from .forms import PostUploadForm
+from .models import Post, Comment
+from .forms import PostUploadForm, CommentForm
 
 
 class PostListView(generic.ListView):
@@ -28,11 +29,9 @@ class PostDetailView(generic.DetailView):
     context_object_name = "post"
 
     def get_context_data(self, **kwargs):
-        post = self.get_object()
-        kwargs["title"] = Post.objects.filter(title=post.title)
-        kwargs["image"] = Post.objects.filter(image=post.image)
-        kwargs["content"] = Post.objects.filter(content=post.content)
-        return super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        context["comment_list"] = Comment.objects.filter(post=self.object)
+        return context
 
 
 class PostUpdateView(generic.UpdateView):

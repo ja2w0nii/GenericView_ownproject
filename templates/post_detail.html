@@ -21,6 +21,18 @@
         <b>생성 날짜</b> : {{ post.created_at }} <br>
         <b>수정 날짜</b> : {{ post.updated_at }}
     </div>
+    <div>
+        <h1 style="margin: 50px 0px;">COMMENT💬</h1>
+        {% for comment in comment_list %}
+        <li style="margin: 0px 10px;">
+            {{ comment.comment }} | {{ comment.updated_at }}
+        </li>
+        {% empty %}
+        <li style="margin: 30px 0px;">
+            ❌댓글이 존재하지 않습니다❌
+        </li>
+        {% endfor %}
+    </div>
 </body>
 
 </html>

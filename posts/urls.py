@@ -11,4 +11,5 @@ urlpatterns = [
     path("<int:pk>/", views.PostDetailView.as_view(), name="post_detail"),
     path("update/<int:pk>/", views.PostUpdateView.as_view(), name="post_update"),
     path("delete/<int:pk>/", views.PostDeleteView.as_view(), name="post_delete"),
+    # 댓글 CRUD
 ]
