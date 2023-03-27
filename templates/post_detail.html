@@ -31,11 +31,16 @@
         {% for comment in comment_list %}
         <li style="margin: 0px 10px;">
             {{ comment.comment }} | {{ comment.updated_at }}
-            <div>
-                <form action="{% url 'posts:comment_delete' pk=comment.id %}" method="post">
-                    {% csrf_token %}
-                    <a href="{% url 'posts:comment_delete' pk=comment.id %}"><span>삭제</span></a>
-                </form>
+            <div style="display: flex; flex-direction: row;">
+                <div style="margin-right: 10px;">
+                    <a href="{% url 'posts:comment_update' pk=comment.id %}"><span>수정</span></a>
+                </div>
+                <div>
+                    <form action="{% url 'posts:comment_delete' pk=comment.id %}" method="post">
+                        {% csrf_token %}
+                        <a href="{% url 'posts:comment_delete' pk=comment.id %}"><span>삭제</span></a>
+                    </form>
+                </div>
             </div>
         </li>
         {% empty %}

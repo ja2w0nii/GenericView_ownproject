@@ -68,6 +68,18 @@ class CommentUploadView(generic.FormView):
         return success_url
 
 
+class CommentUpdateView(generic.UpdateView):
+    model = Comment
+    form_class = CommentUploadForm
+    template_name = "comment_update.html"
+    success_url = reverse_lazy("posts:post_detail")
+
+    def get_success_url(self):
+        post_pk = self.object.post.pk
+        success_url = reverse_lazy("posts:post_detail", kwargs={"pk": post_pk})
+        return success_url
+
+
 class CommentDeleteView(generic.DeleteView):
     model = Comment
     context_object_name = "comment"

@@ -13,5 +13,6 @@ urlpatterns = [
     path("<int:pk>/delete/", views.PostDeleteView.as_view(), name="post_delete"),
     # 댓글 CRUD
     path("<int:pk>/comment/upload/", views.CommentUploadView.as_view(), name="comment_upload"),
+    path("comment/<int:pk>/update/", views.CommentUpdateView.as_view(), name="comment_update"),
     path("comment/<int:pk>/delete/", views.CommentDeleteView.as_view(), name="comment_delete"),
 ]
