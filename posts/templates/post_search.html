@@ -29,47 +29,28 @@
 
 <body>
     {% if user.is_authenticated %}
-    <h1>HOME🏠</h1>
-    <form action="{% url 'posts:post_search' %}" method="get" style="margin-left: 400px;">
-        <input name="query" type="text" placeholder="🔎">
-        <button type="submit" class="btn btn-warning">검색</button>
-    </form>
+    <h1>SEARCH RESULT🔎</h1>
     <div style="display: flex; flex-direction: row;">
         <div>
-            <h2>POST LIST</h2>
-            {% if post_list %}
-            <ul>
-                {% for post in post_list %}
-                <div style="display: flex; flex-direction: row;">
-                    <div>
-                        <li style="margin: 50px 0px;">
-                            <b>user</b> : {{ post.user }} |
-                            <a href="{{ post.get_absolute_url }}"><b>title</b> : {{ post.title }}</a>
-                            <div style="margin: 20px 5px;">
-                                <img src="{% get_media_prefix %}{{ post.image }}" alt="" width="300" height="300">
-                            </div>
-                            <b>content</b> : {{ post.content }} <br>
-                            <b>생성 날짜</b> : {{ post.created_at }} <br>
-                            <b>수정 날짜</b> : {{ post.updated_at }}
-                        </li>
-                    </div>
-                    <div style="margin-right: 10px;">
-                        <a href="{% url 'posts:post_update' pk=post.id %}"><span>수정</span></a>
-                    </div>
-                    <div>
-                        <form action="{% url 'posts:post_delete' pk=post.id %}" method="post">
-                            {% csrf_token %}
-                            <a href="{% url 'posts:post_delete' pk=post.id %}"><span>삭제</span></a>
-                        </form>
-                    </div>
-                </div>
+            <div>
+                <h3>#{{ query }} ({{ search_results.count }}) </h3>
+            </div>
+            <div>
+                {% if search_results %}
+                {% for post in search_results %}
+                <li>
+                    <b>user</b> : {{ post.user }} |
+                    <a href="{{ post.get_absolute_url }}"><b>title</b> : {{ post.title }}</a> <br>
+                    <a href="{{ post.get_absolute_url }}"><img src="{% get_media_prefix %}{{ post.image }}" alt=""
+                            width="300" height="300"></a> <br>
+                    <b>content</b> : {{ post.content }} <br>
+                    <b>생성 날짜</b> : {{ post.created_at }} <br>
+                    <b>수정 날짜</b> : {{ post.updated_at }}
+                </li>
                 {% endfor %}
-            </ul>
-            {% else %}
-            <p>❌게시글이 존재하지 않습니다❌</p>
-            {% endif %}
-            <div style="margin: 100px 150px;">
-                <a href="{% url 'posts:post_upload' %}"><b>업로드하기</b></a>
+                {% else %}
+                <p>❌검색 결과가 존재하지 않습니다❌</p>
+                {% endif %}
             </div>
         </div>
         <div style="margin-left: 300px;">

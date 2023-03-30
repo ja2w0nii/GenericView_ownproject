@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
+from django.db.models import Q
 
 from .models import Post, Comment
 from .forms import PostUploadForm, CommentUploadForm
@@ -109,3 +110,18 @@ class PostLikeView(generic.View):
             post.like_users.add(request.user)
 
         return redirect("posts:post_detail", pk=post.id)
+
+
+class PostSearchView(generic.ListView):
+    model = Post
+    context_object_name = "search_results"
+    template_name = "post_search.html"
+
+    def get_queryset(self):
+        query = self.request.GET.get("query", "")
+        return Post.objects.filter(Q(content__icontains=query))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["query"] = self.request.GET.get("query", "")
+        return context

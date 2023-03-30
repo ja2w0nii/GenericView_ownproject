@@ -17,4 +17,6 @@ urlpatterns = [
     path("comment/<int:pk>/delete/", views.CommentDeleteView.as_view(), name="comment_delete"),
     # 좋아요
     path("<int:pk>/like/", views.PostLikeView.as_view(), name="post_like"),
+    # 검색
+    path("search/", views.PostSearchView.as_view(), name="post_search"),
 ]
