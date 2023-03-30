@@ -34,7 +34,6 @@
                         </li>
                     </div>
                     <div style="margin-right: 10px;">
-
                         <a href="{% url 'posts:post_update' pk=post.id %}"><span>수정</span></a>
                     </div>
                     <div>
@@ -56,6 +55,9 @@
         <div style="margin-left: 300px;">
             {{ user.username }}님 환영합니다. <br>
             <a href="{% url 'users:signout' %}" style="font-size: 20px;">LOGOUT</a>
+            <div>
+                <a href="{% url 'users:profile_update' pk=request.user.id %}"><span>프로필 수정</span></a>
+            </div>
         </div>
     </div>
     {% else %}
