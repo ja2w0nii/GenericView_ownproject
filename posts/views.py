@@ -1,4 +1,4 @@
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -17,6 +17,7 @@ class PostUploadView(generic.FormView):
     success_url = "/"
 
     def form_valid(self, form):
+        form.instance.user = self.request.user
         form.save()
         return super().form_valid(form)
 
@@ -57,6 +58,7 @@ class CommentUploadView(generic.FormView):
     success_url = reverse_lazy("posts:post_detail")
 
     def form_valid(self, form):
+        form.instance.user = self.request.user
         form.instance.post = Post.objects.get(pk=self.kwargs["pk"])
         form.save()
         return super().form_valid(form)
@@ -95,3 +97,15 @@ class CommentDeleteView(generic.DeleteView):
         post_pk = self.object.post.pk
         success_url = reverse_lazy("posts:post_detail", kwargs={"pk": post_pk})
         return success_url
+
+
+class PostLikeView(generic.View):
+    def post(self, request, pk):
+        post = get_object_or_404(Post, id=pk)
+
+        if post.like_users.filter(id=request.user.id).exists():
+            post.like_users.remove(request.user)
+        else:
+            post.like_users.add(request.user)
+
+        return redirect("posts:post_detail", pk=post.id)

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
@@ -13,6 +14,10 @@ class TimeStampedModel(models.Model):
 
 
 class Post(TimeStampedModel):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="post_user"
+    )
+    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="post_like_users")
     title = models.CharField(verbose_name="게시글 제목", max_length=50)
     content = models.TextField(verbose_name="게시글 내용")
     image = models.ImageField(verbose_name="게시글 사진", upload_to="posts")
@@ -28,6 +33,9 @@ class Post(TimeStampedModel):
 
 
 class Comment(TimeStampedModel):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comment_user"
+    )
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comment_post")
     comment = models.TextField(verbose_name="댓글 내용")
 
