@@ -1,6 +1,5 @@
 asgiref==3.6.0
-backports.zoneinfo==0.2.1
-black==23.1.0
+black==23.3.0
 charset-normalizer==3.1.0
 click==8.1.3
 colorama==0.4.6
@@ -8,7 +7,6 @@ Django==4.1.5
 django-environ==0.10.0
 django-feather==0.3.0
 django-mathfilters==1.0.0
-django_debug_toolbar==3.8.1
 idna==3.4
 mypy-extensions==1.0.0
 mysql-connector-python==8.0.32
