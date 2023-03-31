@@ -35,7 +35,7 @@
                 <b>user</b> : {{ post.user }} |
                 <b>title</b> : {{ post.title }}
             </div>
-            <div style="margin-left: 50px;">
+            <div style="display: flex; flex-direction: row; margin-left: 50px;">
                 <form action="{% url 'posts:post_like' pk=post.id %}" method='post'>
                     {% csrf_token %}
                     {% if user in post.like_users.all %}
@@ -44,6 +44,7 @@
                     <button type="submit" class="btn btn-light">좋아요</button>
                     {% endif %}
                 </form>
+                {{ post.like_users.count }}
             </div>
         </div>
         <div style="margin: 20px 5px;">
