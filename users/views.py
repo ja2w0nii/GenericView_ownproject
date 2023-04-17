@@ -22,6 +22,11 @@ class SigninView(LoginView):
         return response
 
 
+class ProfileView(generic.ListView):
+    model = get_user_model()
+    template_name = "profile.html"
+
+
 class ProfileUpdateView(generic.UpdateView):
     model = get_user_model()
     fields = [
