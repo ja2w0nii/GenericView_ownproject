@@ -17,10 +17,9 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["127.0.0.1"]
-
 
 # Application definition
 
@@ -135,3 +134,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # 로그인/로그아웃 성공 후 이동하는 URL
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+CORS_ORIGIN_WHITELIST = ["http://43.201.8.78"]
+
+CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
