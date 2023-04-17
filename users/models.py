@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.urls import reverse
 
 
 class UserManager(BaseUserManager):
@@ -56,6 +57,9 @@ class User(AbstractBaseUser):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["nickname"]
+
+    def get_absolute_url(self):
+        return reverse("users:profile", kwargs={"pk": self.id})
 
     def __str__(self):
         return self.email

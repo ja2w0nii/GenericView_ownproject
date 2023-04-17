@@ -3,7 +3,7 @@ from django.views import generic
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth import authenticate, login
 from .admin import UserCreationForm
-from .forms import SigninForm
+from .forms import SigninForm, ProfileUpdateForm
 from .models import User
 
 
@@ -32,21 +32,12 @@ class SignoutView(LogoutView):
     next_page = reverse_lazy("users:signin")
 
 
-class ProfileView(generic.ListView):
+class ProfileView(generic.DetailView):
     model = User
     template_name = "profile.html"
 
 
 class ProfileUpdateView(generic.UpdateView):
     model = User
-    fields = [
-        "username",
-    ]
+    form_class = ProfileUpdateForm
     template_name = "profile_update.html"
-    success_url = reverse_lazy("posts:post_list")
-
-    def form_valid(self, form):
-        obj = form.save(commit=False)
-        obj.user = self.request.user
-        obj.save()
-        return super().form_valid(form)

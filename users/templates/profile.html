@@ -24,7 +24,7 @@
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
 
-    <title>Home</title>
+    <title>Profile</title>
 </head>
 
 <body>
@@ -32,9 +32,16 @@
     <h1>PROFILE✨</h1>
     <div>
         <div style="display: flex; flex-direction: row; margin: 100px 100px;">
-            <div><b>{{ user.username }}</b> 님</div>
-            <div style="margin-left: 50px;">
-                <form method="get" action="{% url 'users:profile_update' pk=request.user.id%}">
+            <div>
+                <img src="{% get_media_prefix %}{{ user.profile_img }}" alt=""
+                    style="width: 200px; height: 200px; border-radius: 50%;">
+            </div>
+            <div style="margin: 0px 50px;">
+                <b>{{ user.nickname }}</b> 님 <br><br>
+                <b>Email</b> : {{ user.email }}
+            </div>
+            <div>
+                <form method="get" action="{% url 'users:profile_update' pk=user.id%}">
                     <button type="submit" class="btn btn-warning">프로필 수정⚙️</button>
                 </form>
             </div>

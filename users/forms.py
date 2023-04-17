@@ -17,3 +17,9 @@ class SigninForm(forms.Form):
                 self.add_error("password", forms.ValidationError("Password wrong"))
         except models.User.DoesNotExist:
             self.add_error("email", forms.ValidationError("User not exist"))
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = models.User
+        fields = ["nickname", "profile_img"]
