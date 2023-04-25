@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.views import LogoutView
@@ -41,3 +42,15 @@ class ProfileUpdateView(generic.UpdateView):
     model = User
     form_class = ProfileUpdateForm
     template_name = "profile_update.html"
+
+
+class FollowView(generic.View):
+    def post(self, request, pk):
+        user = get_object_or_404(User, id=pk)
+
+        if request.user.follow.filter(id=user.id).exists():
+            request.user.follow.remove(user)
+        else:
+            request.user.follow.add(user)
+
+        return redirect("users:profile", pk=user.id)

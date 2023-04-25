@@ -12,4 +12,6 @@ urlpatterns = [
     # 프로필
     path("<int:pk>/profile/", views.ProfileView.as_view(), name="profile"),
     path("<int:pk>/profile/update/", views.ProfileUpdateView.as_view(), name="profile_update"),
+    # 팔로우
+    path("<int:pk>/profile/follow/", views.FollowView.as_view(), name="follow"),
 ]

@@ -52,6 +52,9 @@ class User(AbstractBaseUser):
         unique=True,
         error_messages={"unique": "이미 존재하는 닉네임입니다."},
     )
+    follow = models.ManyToManyField(
+        "self", symmetrical=False, blank=True, related_name="follow_user"
+    )
 
     objects = UserManager()
 

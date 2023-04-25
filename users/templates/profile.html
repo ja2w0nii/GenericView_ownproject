@@ -40,10 +40,25 @@
                 <b>{{ user.nickname }}</b> 님 <br><br>
                 <b>Email</b> : {{ user.email }}
             </div>
-            <div>
-                <form method="get" action="{% url 'users:profile_update' pk=user.id%}">
-                    <button type="submit" class="btn btn-warning">프로필 수정⚙️</button>
-                </form>
+            <div style="display: flex; flex-direction: column;">
+                <div>
+                    <form method="get" action="{% url 'users:profile_update' pk=user.id%}">
+                        <button type="submit" class="btn btn-warning">프로필 수정⚙️</button>
+                    </form>
+                </div>
+                {% if user != request.user %}
+                <div style="display: flex; flex-direction: row; margin-top: 30px;">
+                    <form action="{% url 'users:follow' pk=user.id %}" method='post'>
+                        {% csrf_token %}
+                        {% if request.user in user.follow_user.all %}
+                        <button type="submit" class="btn btn-danger">언팔로우</button>
+                        {% else %}
+                        <button type="submit" class="btn btn-light">팔로우</button>
+                        {% endif %}
+                    </form>
+                    {{ user.follow_user.count }}
+                </div>
+                {% endif %}
             </div>
         </div>
         {% else %}
