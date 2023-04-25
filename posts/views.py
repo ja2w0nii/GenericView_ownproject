@@ -5,11 +5,16 @@ from django.db.models import Q
 
 from .models import Post, Comment
 from .forms import PostUploadForm, CommentUploadForm
+from users.models import User
 
 
 class PostListView(generic.ListView):
     model = Post
     template_name = "home.html"
+
+    def get_context_data(self, **kwargs):
+        kwargs["users_list"] = User.objects.all()
+        return super().get_context_data(**kwargs)
 
 
 class PostUploadView(generic.FormView):
