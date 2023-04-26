@@ -15,12 +15,11 @@
         <b>Email</b> : {{ user.email }}
     </div>
     <div style="display: flex; flex-direction: column;">
-        <div>
-            <form method="get" action="{% url 'users:profile_update' pk=user.id%}">
-                <button type="submit" class="btn btn-warning">프로필 수정⚙️</button>
-            </form>
-        </div>
-        {% if user != request.user %}
+        {% if user == request.user %}
+        <form method="get" action="{% url 'users:profile_update' pk=user.id%}">
+            <button type="submit" class="btn btn-warning">프로필 수정⚙️</button>
+        </form>
+        {% else %}
         <div style="display: flex; flex-direction: row; margin-top: 30px;">
             <form action="{% url 'users:follow' pk=user.id %}" method='post'>
                 {% csrf_token %}
