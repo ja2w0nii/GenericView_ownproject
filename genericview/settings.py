@@ -19,11 +19,12 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1"]
+ALLOWED_HOSTS = []
 
 # Application definition
 
 INSTALLED_APPS = [
+    # django apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -43,6 +44,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # 로그인 여부 확인
+    "users.middleware.AuthenticationMiddleware",
 ]
 
 ROOT_URLCONF = "genericview.urls"
@@ -134,9 +137,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # 로그인/로그아웃 성공 후 이동하는 URL
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/users/signin"
-
-CORS_ORIGIN_WHITELIST = ["http://43.201.8.78"]
-
-CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
 
 AUTH_USER_MODEL = "users.User"
