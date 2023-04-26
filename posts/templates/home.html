@@ -76,7 +76,7 @@
             <div>
                 <b>{{ user.nickname }}</b>님 환영합니다. <br>
                 <a href="{% url 'users:signout' %}" style="font-size: 20px;">LOGOUT</a>
-                <form method="get" action="{% url 'users:profile' pk=request.user.id%}">
+                <form method="get" action="{% url 'users:profile' pk=request.user.id %}">
                     <button type="submit" class="btn btn-warning">프로필</button>
                 </form>
             </div>

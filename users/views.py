@@ -3,6 +3,8 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.hashers import check_password
+
 from .admin import UserCreationForm
 from .forms import SigninForm, ProfileUpdateForm
 from .models import User
@@ -31,6 +33,18 @@ class SigninView(generic.FormView):
 class SignoutView(LogoutView):
     template_name = "home.html"
     next_page = reverse_lazy("users:signin")
+
+
+class UnregisterView(generic.DeleteView):
+    model = User
+    template_name = "unregister.html"
+    success_url = reverse_lazy("users:signup")
+
+    def post(self, request, *args, **kwargs):
+        password_check = request.POST["password_check"]
+        if check_password(password_check, request.user.password):
+            request.user.delete()
+            return redirect("/users/signup")
 
 
 class ProfileView(generic.DetailView):

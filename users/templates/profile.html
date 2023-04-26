@@ -30,43 +30,45 @@
 <body>
     {% if user.is_authenticated %}
     <h1>PROFILE✨</h1>
-    <div>
-        <div style="display: flex; flex-direction: row; margin: 100px 100px;">
-            <div>
-                <img src="{% get_media_prefix %}{{ user.profile_img }}" alt=""
-                    style="width: 200px; height: 200px; border-radius: 50%;">
-            </div>
-            <div style="margin: 0px 50px;">
-                <b>{{ user.nickname }}</b> 님 <br><br>
-                <b>Email</b> : {{ user.email }}
-            </div>
-            <div style="display: flex; flex-direction: column;">
-                <div>
-                    <form method="get" action="{% url 'users:profile_update' pk=user.id%}">
-                        <button type="submit" class="btn btn-warning">프로필 수정⚙️</button>
-                    </form>
-                </div>
-                {% if user != request.user %}
-                <div style="display: flex; flex-direction: row; margin-top: 30px;">
-                    <form action="{% url 'users:follow' pk=user.id %}" method='post'>
-                        {% csrf_token %}
-                        {% if request.user in user.follow_user.all %}
-                        <button type="submit" class="btn btn-danger">언팔로우</button>
-                        {% else %}
-                        <button type="submit" class="btn btn-light">팔로우</button>
-                        {% endif %}
-                    </form>
-                    {{ user.follow_user.count }}
-                </div>
-                {% endif %}
-            </div>
+    <div style="display: flex; flex-direction: row; margin: 100px 100px;">
+        <div>
+            <img src="{% get_media_prefix %}{{ user.profile_img }}" alt=""
+                style="width: 200px; height: 200px; border-radius: 50%;">
         </div>
-        {% else %}
-        <script type="text/javascript">
-            alert("로그인을 해주세요.")
-            window.location.href = "{% url 'users:signin' %}"
-        </script>
-        {% endif %}
+        <div style="margin: 0px 50px;">
+            <b>{{ user.nickname }}</b> 님 <br><br>
+            <b>Email</b> : {{ user.email }}
+        </div>
+        <div style="display: flex; flex-direction: column;">
+            <div>
+                <form method="get" action="{% url 'users:profile_update' pk=user.id%}">
+                    <button type="submit" class="btn btn-warning">프로필 수정⚙️</button>
+                </form>
+            </div>
+            {% if user != request.user %}
+            <div style="display: flex; flex-direction: row; margin-top: 30px;">
+                <form action="{% url 'users:follow' pk=user.id %}" method='post'>
+                    {% csrf_token %}
+                    {% if request.user in user.follow_user.all %}
+                    <button type="submit" class="btn btn-danger">언팔로우</button>
+                    {% else %}
+                    <button type="submit" class="btn btn-light">팔로우</button>
+                    {% endif %}
+                </form>
+                {{ user.follow_user.count }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div style="margin-left: 350px;">
+        <a href="{% url 'users:unregister' pk=request.user.id %}" class="btn btn-danger"><b>회원탈퇴</b></a>
+    </div>
+    {% else %}
+    <script type="text/javascript">
+        alert("로그인을 해주세요.")
+        window.location.href = "{% url 'users:signin' %}"
+    </script>
+    {% endif %}
 </body>
 
 </html>
