@@ -1,101 +1,55 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block content %}
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
-
-    <title>Home</title>
-</head>
-
-<body>
-    {% if user.is_authenticated %}
-    <h1>HOME🏠</h1>
-    <form action="{% url 'posts:post_search' %}" method="get" style="margin-left: 400px;">
-        <input name="query" type="text" placeholder="🔎">
-        <button type="submit" class="btn btn-warning">검색</button>
-    </form>
-    <div style="display: flex; flex-direction: row;">
-        <div>
-            <h2>POST LIST</h2>
-            {% if post_list %}
-            <ul>
-                {% for post in post_list %}
-                <div style="display: flex; flex-direction: row;">
-                    <div>
-                        <li style="margin: 50px 0px;">
-                            <b>user : </b><a href="{{ user.get_absolute_url }}">{{ post.user.nickname }} |</a>
-                            <a href="{{ post.get_absolute_url }}"><b>title</b> : {{ post.title }}</a>
-                            <div style="margin: 20px 5px;">
-                                <img src="{% get_media_prefix %}{{ post.image }}" alt="" width="300" height="300">
-                            </div>
-                            <b>content</b> : {{ post.content }} <br>
-                            <b>생성 날짜</b> : {{ post.created_at }} <br>
-                            <b>수정 날짜</b> : {{ post.updated_at }}
-                        </li>
-                    </div>
-                    <div style="margin-right: 10px;">
-                        <a href="{% url 'posts:post_update' pk=post.id %}"><span>수정</span></a>
-                    </div>
-                    <div>
-                        <form action="{% url 'posts:post_delete' pk=post.id %}" method="post">
-                            {% csrf_token %}
-                            <a href="{% url 'posts:post_delete' pk=post.id %}"><span>삭제</span></a>
-                        </form>
-                    </div>
+<div style="display: flex; flex-direction: row;">
+    <div>
+        {% if post_list %}
+        <ul>
+            {% for post in post_list %}
+            <div style="display: flex; flex-direction: row;">
+                <div>
+                    <li style="margin: 50px 0px;">
+                        <b>user : </b><a href="{{ user.get_absolute_url }}">{{ post.user.nickname }} |</a>
+                        <a href="{{ post.get_absolute_url }}"><b>title</b> : {{ post.title }}</a>
+                        <div style="margin: 20px 5px;">
+                            <img src="{% get_media_prefix %}{{ post.image }}" alt="" width="300" height="300">
+                        </div>
+                        <b>content</b> : {{ post.content }} <br>
+                        <b>생성 날짜</b> : {{ post.created_at }} <br>
+                        <b>수정 날짜</b> : {{ post.updated_at }}
+                    </li>
                 </div>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p>❌게시글이 존재하지 않습니다❌</p>
-            {% endif %}
-            <div style="margin: 100px 150px;">
-                <a href="{% url 'posts:post_upload' %}"><b>업로드하기</b></a>
+                <div style="margin-right: 10px;">
+                    <a href="{% url 'posts:post_update' pk=post.id %}"><span>수정</span></a>
+                </div>
+                <div>
+                    <form action="{% url 'posts:post_delete' pk=post.id %}" method="post">
+                        {% csrf_token %}
+                        <a href="{% url 'posts:post_delete' pk=post.id %}"><span>삭제</span></a>
+                    </form>
+                </div>
             </div>
-        </div>
-        <div style="margin: 0px 300px;">
-            <div>
-                <b>{{ user.nickname }}</b>님 환영합니다. <br>
-                <a href="{% url 'users:signout' %}" style="font-size: 20px;">LOGOUT</a>
-                <form method="get" action="{% url 'users:profile' pk=request.user.id %}">
-                    <button type="submit" class="btn btn-warning">프로필</button>
-                </form>
-            </div>
-            <div style="margin-top: 100px; padding: 20px; border: solid rgb(231, 218, 103) 2px; border-radius: 20px;">
-                {% for user in users_list %}
-                <li style="margin-top: 10px;">
-                    <img src="{% get_media_prefix %}{{ user.profile_img }}" alt="" width="30" height="30">
-                    <a href="{{ user.get_absolute_url }}"><b>{{ user.nickname }}</b></a>
-                </li>
-                {% endfor %}
-            </div>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>❌게시글이 존재하지 않습니다❌</p>
+        {% endif %}
+        <div style="margin: 100px 150px;">
+            <a href="{% url 'posts:post_upload' %}"><b>업로드하기</b></a>
         </div>
     </div>
-    {% else %}
-    <script type="text/javascript">
-        alert("로그인을 해주세요.")
-        window.location.href = "{% url 'users:signin' %}"
-    </script>
-    {% endif %}
-</body>
+    <div
+        style="height: 300px; margin: 50px 50px; padding: 20px; border: solid rgb(231, 218, 103) 2px; border-radius: 20px;">
+        {% for user in users_list %}
+        <li style="margin-top: 10px;">
+            <img src="{% get_media_prefix %}{{ user.profile_img }}" alt="" width="30" height="30">
+            <a href="{{ user.get_absolute_url }}"><b>{{ user.nickname }}</b></a>
+        </li>
+        {% endfor %}
+    </div>
+</div>
 
-</html>
+{% endblock content %}

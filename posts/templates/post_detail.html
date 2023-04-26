@@ -1,87 +1,62 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block content %}
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
-
-    <title>Post Detail</title>
-</head>
-
-<body>
-    <h1>POST DETAIL🖼️</h1>
-    <div>
+<h1>POST DETAIL🖼️</h1>
+<div>
+    <div style="display: flex; flex-direction: row;">
+        <div>
+            <b>user : </b><a href="{{ user.get_absolute_url }}">{{ post.user.nickname }} |</a>
+            <b>title</b> : {{ post.title }}
+        </div>
+        <div style="display: flex; flex-direction: row; margin-left: 50px;">
+            <form action="{% url 'posts:post_like' pk=post.id %}" method='post'>
+                {% csrf_token %}
+                {% if user in post.like_users.all %}
+                <button type="submit" class="btn btn-danger">좋아요 취소</button>
+                {% else %}
+                <button type="submit" class="btn btn-light">좋아요</button>
+                {% endif %}
+            </form>
+            {{ post.like_users.count }}
+        </div>
+    </div>
+    <div style="margin: 20px 5px;">
+        <img src="{% get_media_prefix %}{{ post.image }}" alt="" width="300" height="300">
+    </div>
+    <b>content</b> : {{ post.content }} <br>
+    <b>생성 날짜</b> : {{ post.created_at }} <br>
+    <b>수정 날짜</b> : {{ post.updated_at }}
+</div>
+<div>
+    <div style="display: flex; flex-direction: row;">
+        <h1 style="margin: 50px 0px;">COMMENT💬</h1>
+        <div style="margin: 60px 20px;;">
+            <a href="{% url 'posts:comment_upload' pk=post.id %}"><b>댓글 등록하기</b></a>
+        </div>
+    </div>
+    {% for comment in comment_list %}
+    <li style="margin: 0px 10px;">
+        {{ comment.user }} | {{ comment.comment }} | {{ comment.updated_at }}
         <div style="display: flex; flex-direction: row;">
+            <div style="margin-right: 10px;">
+                <a href="{% url 'posts:comment_update' pk=comment.id %}"><span>수정</span></a>
+            </div>
             <div>
-                <b>user : </b><a href="{{ user.get_absolute_url }}">{{ post.user.nickname }} |</a>
-                <b>title</b> : {{ post.title }}
-            </div>
-            <div style="display: flex; flex-direction: row; margin-left: 50px;">
-                <form action="{% url 'posts:post_like' pk=post.id %}" method='post'>
+                <form action="{% url 'posts:comment_delete' pk=comment.id %}" method="post">
                     {% csrf_token %}
-                    {% if user in post.like_users.all %}
-                    <button type="submit" class="btn btn-danger">좋아요 취소</button>
-                    {% else %}
-                    <button type="submit" class="btn btn-light">좋아요</button>
-                    {% endif %}
+                    <a href="{% url 'posts:comment_delete' pk=comment.id %}"><span>삭제</span></a>
                 </form>
-                {{ post.like_users.count }}
             </div>
         </div>
-        <div style="margin: 20px 5px;">
-            <img src="{% get_media_prefix %}{{ post.image }}" alt="" width="300" height="300">
-        </div>
-        <b>content</b> : {{ post.content }} <br>
-        <b>생성 날짜</b> : {{ post.created_at }} <br>
-        <b>수정 날짜</b> : {{ post.updated_at }}
-    </div>
-    <div>
-        <div style="display: flex; flex-direction: row;">
-            <h1 style="margin: 50px 0px;">COMMENT💬</h1>
-            <div style="margin: 60px 20px;;">
-                <a href="{% url 'posts:comment_upload' pk=post.id %}"><b>댓글 등록하기</b></a>
-            </div>
-        </div>
-        {% for comment in comment_list %}
-        <li style="margin: 0px 10px;">
-            {{ comment.user }} | {{ comment.comment }} | {{ comment.updated_at }}
-            <div style="display: flex; flex-direction: row;">
-                <div style="margin-right: 10px;">
-                    <a href="{% url 'posts:comment_update' pk=comment.id %}"><span>수정</span></a>
-                </div>
-                <div>
-                    <form action="{% url 'posts:comment_delete' pk=comment.id %}" method="post">
-                        {% csrf_token %}
-                        <a href="{% url 'posts:comment_delete' pk=comment.id %}"><span>삭제</span></a>
-                    </form>
-                </div>
-            </div>
-        </li>
-        {% empty %}
-        <li style="margin: 30px 0px;">
-            ❌댓글이 존재하지 않습니다❌
-        </li>
-        {% endfor %}
-    </div>
-</body>
+    </li>
+    {% empty %}
+    <li style="margin: 30px 0px;">
+        ❌댓글이 존재하지 않습니다❌
+    </li>
+    {% endfor %}
+</div>
 
-</html>
+{% endblock content %}
