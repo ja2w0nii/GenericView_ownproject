@@ -12,24 +12,29 @@
             <div style="display: flex; flex-direction: row;">
                 <div>
                     <li style="margin: 50px 0px;">
-                        <b>user : </b><a href="{{ user.get_absolute_url }}">{{ post.user.nickname }} |</a>
-                        <a href="{{ post.get_absolute_url }}"><b>title</b> : {{ post.title }}</a>
+                        <div style="display: flex; flex-direction: row;">
+                            <b>user : </b><a href="{{ user.get_absolute_url }}">{{ post.user.nickname }} |</a>
+                            <b>title : </b><a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                            <div style="margin: 0px 5px 0px 50px;">
+                                <a href="{% url 'posts:post_update' pk=post.id %}"
+                                    class="btn btn-success"><span>수정</span></a>
+                            </div>
+                            <div>
+                                <form action="{% url 'posts:post_delete' pk=post.id %}" method="post">
+                                    {% csrf_token %}
+                                    <a href="{% url 'posts:post_delete' pk=post.id %}"
+                                        class="btn btn-danger"><span>삭제</span></a>
+                                </form>
+                            </div>
+                        </div>
                         <div style="margin: 20px 5px;">
-                            <img src="{% get_media_prefix %}{{ post.image }}" alt="" width="300" height="300">
+                            <a href="{{ post.get_absolute_url }}"><img src="{% get_media_prefix %}{{ post.image }}"
+                                    alt="" width="300" height="300"></a>
                         </div>
                         <b>content</b> : {{ post.content }} <br>
                         <b>생성 날짜</b> : {{ post.created_at }} <br>
                         <b>수정 날짜</b> : {{ post.updated_at }}
                     </li>
-                </div>
-                <div style="margin-right: 10px;">
-                    <a href="{% url 'posts:post_update' pk=post.id %}"><span>수정</span></a>
-                </div>
-                <div>
-                    <form action="{% url 'posts:post_delete' pk=post.id %}" method="post">
-                        {% csrf_token %}
-                        <a href="{% url 'posts:post_delete' pk=post.id %}"><span>삭제</span></a>
-                    </form>
                 </div>
             </div>
             {% endfor %}
