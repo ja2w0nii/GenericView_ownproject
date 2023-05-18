@@ -19,11 +19,14 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "192.168.50.85"]
 
 # Application definition
 
 INSTALLED_APPS = [
+    # Channels
+    "channels",
+    "chat",
     # django apps
     "django.contrib.admin",
     "django.contrib.auth",
@@ -31,12 +34,16 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # cors
+    "corsheaders",
     # local apps
     "users",
     "posts",
 ]
 
 MIDDLEWARE = [
+    # cors
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -47,6 +54,8 @@ MIDDLEWARE = [
     # 로그인 여부 확인
     "users.middleware.AuthenticationMiddleware",
 ]
+
+CORS_ORIGIN_WHITELIST = ["http://127.0.0.1:8000", "http://192.168.50.85"]
 
 ROOT_URLCONF = "genericview.urls"
 
@@ -67,6 +76,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "genericview.wsgi.application"
+ASGI_APPLICATION = "genericview.routing.application"
 
 
 # Database
@@ -139,3 +149,14 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/users/signin"
 
 AUTH_USER_MODEL = "users.User"
+
+
+# channels
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
