@@ -4,9 +4,13 @@
 
 {% block content %}
 
-What chat room would you like to enter?<br />
-<input id="room-name-input" type="text" size="100" /><br />
-<input id="room-name-submit" type="button" value="Enter" />
+<div class="form-floating mb-3">
+    <input type="text" style="margin: 50px 50px; width: 500px;" class="form-control" id="room-name-input"
+        placeholder="room name" required />
+    <label for="floatingInput" style="margin-left: 50px; width: 500px;">입장을 원하시는 채팅방이 이름을 입력해주세요.</label>
+    <button class="btn btn-outline-secondary" type="button" id="room-name-submit" value="Enter"
+        style="margin-left: 250px;">입장하기</button>
+</div>
 
 {% endblock content %}
 

@@ -43,7 +43,7 @@ class User(AbstractBaseUser):
     updated_at = models.DateTimeField(auto_now=True)
 
     profile_img = models.ImageField(
-        verbose_name="프로필 사진", default="profile/default.jpeg", upload_to="profile"
+        verbose_name="프로필 사진", default="img/profile/default.jpeg", upload_to="img/profile"
     )
     nickname = models.CharField(
         verbose_name="닉네임",
