@@ -7,13 +7,12 @@ class UserManager(BaseUserManager):
     def create_user(
         self,
         email,
-        nickname,
         password=None,
     ):
         if not email:
             raise ValueError("이메일을 작성해 주세요.")
 
-        user = self.model(email=self.normalize_email(email), nickname=nickname)
+        user = self.model(email=self.normalize_email(email))
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -21,10 +20,9 @@ class UserManager(BaseUserManager):
     def create_superuser(
         self,
         email,
-        nickname,
         password=None,
     ):
-        user = self.create_user(email, password=password, nickname=nickname)
+        user = self.create_user(email, password=password)
         user.is_admin = True
         user.save(using=self._db)
         return user
@@ -45,12 +43,10 @@ class User(AbstractBaseUser):
     profile_img = models.ImageField(
         verbose_name="프로필 사진", default="img/profile/default.jpeg", upload_to="img/profile"
     )
-    nickname = models.CharField(
+    username = models.CharField(
         verbose_name="닉네임",
-        default="",
         max_length=20,
-        unique=True,
-        error_messages={"unique": "이미 존재하는 닉네임입니다."},
+        blank=True,
     )
     follow = models.ManyToManyField(
         "self", symmetrical=False, blank=True, related_name="follow_user"
@@ -59,7 +55,7 @@ class User(AbstractBaseUser):
     objects = UserManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["nickname"]
+    REQUIRED_FIELDS = []
 
     def get_absolute_url(self):
         return reverse("users:profile", kwargs={"pk": self.id})

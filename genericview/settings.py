@@ -34,11 +34,18 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     # cors
     "corsheaders",
     # local apps
     "users",
     "posts",
+    # allauth apps
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    # Keycloak
+    "allauth.socialaccount.providers.keycloak",
 ]
 
 MIDDLEWARE = [
@@ -58,6 +65,10 @@ MIDDLEWARE = [
 CORS_ORIGIN_WHITELIST = ["http://127.0.0.1:8000", "http://192.168.50.85"]
 
 ROOT_URLCONF = "genericview.urls"
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 TEMPLATES = [
     {
@@ -144,11 +155,34 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# 로그인/로그아웃 성공 후 이동하는 URL
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/users/signin"
 
+# user model
 AUTH_USER_MODEL = "users.User"
+
+
+# allauth
+SITE_ID = 1
+
+LOGIN_REDIRECT_URL = "/"
+# LOGOUT_REDIRECT_URL = "/users/signin"
+
+# SESSION_COOKIE_AGE = 7200
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
+
+# keycloak
+SOCIALACCOUNT_PROVIDERS = {
+    "keycloak": {
+        "KEYCLOAK_URL": "http://127.0.0.1:8080",
+        "KEYCLOAK_REALM": "genericrealm",
+        "KEYCLOAK_CLIENT_ID": "genericclient",
+        "KEYCLOAK_CLIENT_SECRET": "n5d5aUFAu2pX5yORXmRwKuPkq9m4iKrn",
+    },
+}
 
 
 # channels

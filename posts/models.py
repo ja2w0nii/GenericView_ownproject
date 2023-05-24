@@ -20,7 +20,7 @@ class Post(TimeStampedModel):
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="post_like_users")
     title = models.CharField(verbose_name="게시글 제목", max_length=50)
     content = models.TextField(verbose_name="게시글 내용")
-    image = models.ImageField(verbose_name="게시글 사진", upload_to="posts")
+    image = models.ImageField(verbose_name="게시글 사진", upload_to="img/posts")
 
     def __str__(self):
         return self.title

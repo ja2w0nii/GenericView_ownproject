@@ -22,4 +22,4 @@ class SigninForm(forms.Form):
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = models.User
-        fields = ["nickname", "profile_img"]
+        fields = ["username", "profile_img"]

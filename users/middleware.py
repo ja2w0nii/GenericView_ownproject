@@ -11,7 +11,9 @@ class AuthenticationMiddleware:
             not request.user.is_authenticated
             and request.path != "/users/signin/"
             and request.path != "/users/signup/"
-            and request.path != "/admin/"
+            and request.path != "/accounts/keycloak/login/"
+            and request.path != "/accounts/keycloak/login/callback/"
+            and "admin" not in request.path
         ):
             return redirect("/users/signin/")
         response = self.get_response(request)
