@@ -1,5 +1,4 @@
 import os
-import environ
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -10,11 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # .env
-env = environ.Env(DEBUG=(bool, False))
-
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
-
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -59,7 +54,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # 로그인 여부 확인
-    "users.middleware.AuthenticationMiddleware",
+    "users.middleware.JsonWebTokenMiddleWare",
 ]
 
 CORS_ORIGIN_WHITELIST = ["http://127.0.0.1:8000", "http://192.168.50.85"]

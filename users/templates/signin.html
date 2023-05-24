@@ -28,10 +28,21 @@
 
 <body>
     <h1>로그인👋</h1>
-    <form method="post" action="{% url 'users:signin' %}">
+    <form method="POST" action="{% url 'users:signin' %}">
         {% csrf_token %}
-        {{form.as_p}}
-        <button type="submit" class="btn btn-warning" style="margin-left: 110px;">로그인</button>
+        <div style="width: 300px;">
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com"
+                    required>
+                <label for="floatingInput">이메일</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password"
+                    required>
+                <label for="floatingPassword">비밀번호</label>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-warning" style="margin: 20px 0px 0px 110px;">로그인</button>
     </form>
     <div style="margin: 30px 70px;">
         <a href="{% url 'keycloak_login' %}" class="btn btn-secondary"><span>Keycloak 로그인</span></a>
