@@ -4,6 +4,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from allauth.socialaccount import urls as socialaccount_urls
 
+from users import views
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -14,6 +16,8 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("accounts/", include(socialaccount_urls)),
     # keycloak
-    # path("keycloak/login/", views.keycloak_login, name="keycloak_login"),
-    # path("keycloak/login/callback/", views.keycloak_callback, name="keycloak_callback"),
+    path("keycloak/login/", views.KeycloakLoginView.as_view(), name="keycloak_login"),
+    path(
+        "keycloak/login/callback/", views.KeycloakCallbackView.as_view(), name="keycloak_callback"
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

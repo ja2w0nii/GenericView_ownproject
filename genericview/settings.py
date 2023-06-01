@@ -174,45 +174,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
 
 
-# allauth
-SITE_ID = 1
-
-LOGIN_REDIRECT_URL = "/"
-# LOGOUT_REDIRECT_URL = "/users/signin"
-
-# SESSION_COOKIE_AGE = 7200
-
-AUTHENTICATION_BACKENDS = (
-    "django.contrib.auth.backends.ModelBackend",
-    # "allauth.account.auth_backends.AuthenticationBackend",
-)
-
-
-# keycloak
-SOCIALACCOUNT_PROVIDERS = {
-    "keycloak": {
-        "KEYCLOAK_URL": "http://127.0.0.1:8080",
-        "KEYCLOAK_REALM": "genericrealm",
-        "KEYCLOAK_CLIENT_ID": "genericclient",
-        "KEYCLOAK_CLIENT_SECRET": "n5d5aUFAu2pX5yORXmRwKuPkq9m4iKrn",
-        "KEYCLOAK_OIDC_ENDPOINT": "http://127.0.0.1:8080/realms/genericrealm/protocol/openid-connect",
-        "KEYCLOAK_ACCESS_TOKEN_URL": "http://127.0.0.1:8080/realms/genericrealm/protocol/openid-connect/token",
-        "KEYCLOAK_ID_TOKEN_URL": "http://127.0.0.1:8080/realms/genericrealm/protocol/openid-connect/token",
-    },
-}
-
-
-# channels
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}
-
-
 # simpleJWT
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
@@ -238,4 +199,43 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+}
+
+
+# allauth
+SITE_ID = 1
+
+LOGIN_REDIRECT_URL = "/"
+# LOGOUT_REDIRECT_URL = "/users/signin"
+
+# SESSION_COOKIE_AGE = 7200
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
+
+# keycloak
+SOCIALACCOUNT_PROVIDERS = {
+    "keycloak": {
+        "KEYCLOAK_URL": "http://127.0.0.1:8080",
+        "KEYCLOAK_REALM": "genericrealm",
+        "KEYCLOAK_CLIENT_ID": "genericclient",
+        "KEYCLOAK_CLIENT_SECRET": "n5d5aUFAu2pX5yORXmRwKuPkq9m4iKrn",
+        "KEYCLOAK_OIDC_ENDPOINT": "http://127.0.0.1:8080/realms/genericrealm/protocol/openid-connect",
+        "KEYCLOAK_ACCESS_TOKEN_URL": "http://127.0.0.1:8080/realms/genericrealm/protocol/openid-connect/token",
+        "KEYCLOAK_ID_TOKEN_URL": "http://127.0.0.1:8080/realms/genericrealm/protocol/openid-connect/token",
+    },
+}
+
+
+# channels
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
 }

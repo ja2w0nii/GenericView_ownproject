@@ -1,16 +1,17 @@
 from django.shortcuts import get_object_or_404, redirect, render
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.views import generic
+from django.views import generic, View
 from django.contrib.auth.views import LogoutView
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import check_password
 from rest_framework_simplejwt.views import TokenObtainPairView
+from keycloak import KeycloakOpenID
 
 
 from .admin import UserCreationForm
 from .forms import SigninForm, ProfileUpdateForm
 from .models import User
-from .serializers import CustomTokenObtainPairSerializer
 
 
 class SignupView(generic.CreateView):
@@ -20,8 +21,6 @@ class SignupView(generic.CreateView):
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
-
     def get(self, request, *args, **kwargs):
         return render(request, "signin.html")
 
@@ -48,66 +47,61 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         return redirect("users:signin")
 
 
-# def keycloak_login(request):
-#     # keycloak-oic 클라이언트 생성
-#     client = Client(client_authn_method=CLIENT_AUTHN_METHOD)
-
-#     # 로그인 시작을 위해 Keycloak 인증 URL 가져오기
-#     auth_req = client.construct_AuthorizationRequest(
-#         request_args={
-#             **request.GET,
-#             "response_type": "code",
-#             "redirect_uri": "http://127.0.0.1:8000/keycloak/login/callback/",
-#         },
-#         request_kwargs={
-#             "scope": ["openid", "profile", "email"],
-#         },
-#     )
-#     login_url = auth_req.request(client.authorization_endpoint)
-
-#     # Keycloak 로그인 페이지로 리다이렉트
-#     return redirect(login_url)
+KEYCLOAK_URL = "http://127.0.0.1:8080"
+KEYCLOAK_REALM = "genericrealm"
+KEYCLOAK_CLIENT_ID = "genericclient"
+KEYCLOAK_CLIENT_SECRET = "n5d5aUFAu2pX5yORXmRwKuPkq9m4iKrn"
 
 
-# def keycloak_callback(request):
-#     # keycloak-oic 클라이언트 생성
-#     client = Client(client_authn_method=CLIENT_AUTHN_METHOD)
+class KeycloakLoginView(View):
+    def get(self, request):
+        keycloak_openid = KeycloakOpenID(
+            server_url=KEYCLOAK_URL,
+            client_id=KEYCLOAK_CLIENT_ID,
+            realm_name=KEYCLOAK_REALM,
+            client_secret_key=KEYCLOAK_CLIENT_SECRET,
+        )
 
-#     # 콜백 요청 처리 및 토큰 교환
-#     auth_resp = client.parse_response(
-#         AuthorizationResponse,
-#         info=request.GET,
-#         sformat="dict",
-#         keyjar=client.keyjar,
-#     )
-#     token_resp = client.do_access_token_request(
-#         state=auth_resp["state"],
-#         request_args={
-#             "code": auth_resp["code"],
-#             "redirect_uri": "http://127.0.0.1:8000/",
-#         },
-#     )
+        # Keycloak 로그인 URL 생성
+        login_url = keycloak_openid.auth_url(
+            redirect_uri=request.build_absolute_uri(
+                "http://127.0.0.1:8000/keycloak/login/callback/"
+            ),
+            scope="openid",
+        )
 
-#     # 토큰 활용 및 로그인 처리
-#     if token_resp:
-#         # 토큰을 성공적으로 받아왔을 경우, 필요한 후속 처리를 수행합니다.
-#         # 예를 들어, 토큰을 쿠키에 저장하거나 사용자 인증을 수행할 수 있습니다.
-#         access_token = token_resp["access_token"]
-#         # 쿠키에 토큰 저장 등의 후속 처리를 진행합니다.
-#         # ...
+        return HttpResponseRedirect(login_url)
 
-#         # 로그인 성공 후 리다이렉트할 URL 설정
-#         redirect_url = "/"
-#         return redirect(redirect_url)
-#     else:
-#         # 토큰을 받아오지 못했을 경우, 로그인 실패 처리를 수행합니다.
-#         redirect_url = "/users/login/"
-#         return redirect(redirect_url)
+
+class KeycloakCallbackView(View):
+    def get(self, request):
+        keycloak_openid = KeycloakOpenID(
+            server_url=KEYCLOAK_URL,
+            client_id=KEYCLOAK_CLIENT_ID,
+            realm_name=KEYCLOAK_REALM,
+            client_secret_key=KEYCLOAK_CLIENT_SECRET,
+        )
+
+        username = "genericuser"
+        password = "genericuser"
+
+        code = request.GET.get("code")
+        token = keycloak_openid.token(username=username, password=password, code=code)
+
+        response = redirect("posts:post_list")
+        response.set_cookie("access_token", token["access_token"])
+
+        return response
 
 
 class SignoutView(LogoutView):
     template_name = "home.html"
     next_page = reverse_lazy("users:signin")
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        response.delete_cookie("access_token")
+        return response
 
 
 class UnregisterView(generic.DeleteView):
@@ -119,7 +113,10 @@ class UnregisterView(generic.DeleteView):
         password_check = request.POST["password_check"]
         if check_password(password_check, request.user.password):
             request.user.delete()
-            return redirect("/users/signup")
+            logout(request)
+            response = redirect("users:signin")
+            response.delete_cookie("access_token")
+            return response
 
 
 class ProfileView(generic.DetailView):

@@ -34,8 +34,10 @@
         {% endif %}
     </div>
 </div>
+{% if user == request.user %}
 <div style="margin-left: 350px;">
     <a href="{% url 'users:unregister' pk=request.user.id %}" class="btn btn-danger"><b>회원탈퇴</b></a>
 </div>
+{% endif %}
 
 {% endblock content %}
