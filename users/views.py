@@ -1,29 +1,16 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django.views import generic, View
+from django.views import generic
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import check_password
-from users.utils.jwt import encode_jwt
-from datetime import datetime, timedelta
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 
 from .admin import UserCreationForm
-from .forms import ProfileUpdateForm
+from .forms import SigninForm, ProfileUpdateForm
 from .models import User
-
-
-def generate_access_token(email):
-    iat = datetime.now()
-    exp = iat + timedelta(days=7)
-
-    data = {
-        "iat": iat.timestamp(),
-        "exp": exp.timestamp(),
-        "aud": email,
-        "iss": "Redux Todo Web Backend",
-    }
-
-    return encode_jwt(data)
+from .serializers import CustomTokenObtainPairSerializer
 
 
 class SignupView(generic.CreateView):
@@ -32,56 +19,90 @@ class SignupView(generic.CreateView):
     success_url = reverse_lazy("users:signin")
 
 
-# session 로그인
-# class SigninView(generic.FormView):
-#     template_name = "signin.html"
-#     form_class = SigninForm
-#     success_url = reverse_lazy("posts:post_list")
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
-#     def form_valid(self, form):
-#         email = form.cleaned_data.get("email")
-#         password = form.cleaned_data.get("password")
-#         user = authenticate(self.request, username=email, password=password)
-#         if user is not None:
-#             login(self.request, user)
-#         return super().form_valid(form)
-
-
-# token 로그인
-class SigninView(View):
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         return render(request, "signin.html")
 
-    def post(self, request):
-        data = {}
-
-        try:
-            email = request.POST.get("email")
-            password = request.POST.get("password")
+    def post(self, request, *args, **kwargs):
+        form = SigninForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get("email")
+            password = form.cleaned_data.get("password")
 
             if not email or not password:
-                raise ValueError()
+                return redirect("users:signin")
 
-            user = User.objects.get(email=email)
+            user = authenticate(request, username=email, password=password)
 
-            # 토큰 생성
-            access_token = generate_access_token(email)
-
-            # 쿠키에 토큰 저장
-            response = redirect("posts:post_list")
-            response.set_cookie("access_token", access_token)
-
-            data["email"] = email
-
-            user = authenticate(self.request, email=email, password=password)
             if user is not None:
-                login(self.request, user)
+                login(request, user)
+                response = super().post(request, *args, **kwargs)
+                access_token = response.data.get("access")
+                response = redirect("posts:post_list")
+                response.set_cookie("access_token", access_token)
 
-            return response
+                return response
 
-        except (ValueError, User.DoesNotExist):
-            data["error"] = "유효하지 않은 양식입니다. 다시 작성해주세요."
-            return render(request, "signin.html", context=data, status=400)
+        return redirect("users:signin")
+
+
+# def keycloak_login(request):
+#     # keycloak-oic 클라이언트 생성
+#     client = Client(client_authn_method=CLIENT_AUTHN_METHOD)
+
+#     # 로그인 시작을 위해 Keycloak 인증 URL 가져오기
+#     auth_req = client.construct_AuthorizationRequest(
+#         request_args={
+#             **request.GET,
+#             "response_type": "code",
+#             "redirect_uri": "http://127.0.0.1:8000/keycloak/login/callback/",
+#         },
+#         request_kwargs={
+#             "scope": ["openid", "profile", "email"],
+#         },
+#     )
+#     login_url = auth_req.request(client.authorization_endpoint)
+
+#     # Keycloak 로그인 페이지로 리다이렉트
+#     return redirect(login_url)
+
+
+# def keycloak_callback(request):
+#     # keycloak-oic 클라이언트 생성
+#     client = Client(client_authn_method=CLIENT_AUTHN_METHOD)
+
+#     # 콜백 요청 처리 및 토큰 교환
+#     auth_resp = client.parse_response(
+#         AuthorizationResponse,
+#         info=request.GET,
+#         sformat="dict",
+#         keyjar=client.keyjar,
+#     )
+#     token_resp = client.do_access_token_request(
+#         state=auth_resp["state"],
+#         request_args={
+#             "code": auth_resp["code"],
+#             "redirect_uri": "http://127.0.0.1:8000/",
+#         },
+#     )
+
+#     # 토큰 활용 및 로그인 처리
+#     if token_resp:
+#         # 토큰을 성공적으로 받아왔을 경우, 필요한 후속 처리를 수행합니다.
+#         # 예를 들어, 토큰을 쿠키에 저장하거나 사용자 인증을 수행할 수 있습니다.
+#         access_token = token_resp["access_token"]
+#         # 쿠키에 토큰 저장 등의 후속 처리를 진행합니다.
+#         # ...
+
+#         # 로그인 성공 후 리다이렉트할 URL 설정
+#         redirect_url = "/"
+#         return redirect(redirect_url)
+#     else:
+#         # 토큰을 받아오지 못했을 경우, 로그인 실패 처리를 수행합니다.
+#         redirect_url = "/users/login/"
+#         return redirect(redirect_url)
 
 
 class SignoutView(LogoutView):

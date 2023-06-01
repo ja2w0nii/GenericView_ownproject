@@ -4,6 +4,7 @@ from django.core.exceptions import PermissionDenied
 from users.utils.jwt import decode_jwt
 from jwt.exceptions import ExpiredSignatureError
 from http import HTTPStatus
+from rest_framework_simplejwt.tokens import AccessToken
 
 
 # session 로그인 여부 확인
@@ -35,8 +36,8 @@ class JsonWebTokenMiddleWare(object):
             if (
                 request.path != "/users/signup/"
                 and request.path != "/users/signin/"
-                and request.path != "/accounts/keycloak/login/"
-                and request.path != "/accounts/keycloak/login/callback/"
+                # and request.path != "/accounts/keycloak/login/"
+                # and request.path != "/accounts/keycloak/login/callback/"
                 and "admin" not in request.path
             ):
                 # 쿠키에서 토큰 추출
@@ -45,8 +46,9 @@ class JsonWebTokenMiddleWare(object):
                 if not access_token:
                     raise PermissionDenied()
 
-                payload = decode_jwt(access_token)
-                email = payload.get("aud", None)
+                token = AccessToken(access_token)
+                email = token.payload.get("email")
+
                 if not email:
                     raise PermissionDenied()
                 User.objects.get(email=email)

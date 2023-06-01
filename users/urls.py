@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
 app_name = "users"
@@ -7,7 +8,7 @@ app_name = "users"
 urlpatterns = [
     # 회원가입/회원탈퇴, 로그인/로그아웃
     path("signup/", views.SignupView.as_view(), name="signup"),
-    path("signin/", views.SigninView.as_view(), name="signin"),
+    path("signin/", views.CustomTokenObtainPairView.as_view(), name="signin"),
     path("signout/", views.SignoutView.as_view(), name="signout"),
     path("<int:pk>/unregister/", views.UnregisterView.as_view(), name="unregister"),
     # 프로필

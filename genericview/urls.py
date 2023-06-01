@@ -13,4 +13,7 @@ urlpatterns = [
     # allauth
     path("accounts/", include("allauth.urls")),
     path("accounts/", include(socialaccount_urls)),
+    # keycloak
+    # path("keycloak/login/", views.keycloak_login, name="keycloak_login"),
+    # path("keycloak/login/callback/", views.keycloak_callback, name="keycloak_callback"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
