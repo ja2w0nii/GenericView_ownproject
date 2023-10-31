@@ -2,12 +2,12 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from django.db.models import Q
-
-from .models import Post, Comment
-from .forms import PostUploadForm, CommentUploadForm
 from users.models import User
+from posts.models import Post, Comment
+from posts.forms import PostUploadForm, CommentUploadForm
 
 
+# 게시글 조회
 class PostListView(generic.ListView):
     model = Post
     template_name = "home.html"
@@ -17,6 +17,7 @@ class PostListView(generic.ListView):
         return super().get_context_data(**kwargs)
 
 
+# 게시글 작성
 class PostUploadView(generic.FormView):
     template_name = "post_upload.html"
     form_class = PostUploadForm
@@ -28,6 +29,7 @@ class PostUploadView(generic.FormView):
         return super().form_valid(form)
 
 
+# 게시글 상세 조회
 class PostDetailView(generic.DetailView):
     model = Post
     template_name = "post_detail.html"
@@ -39,12 +41,14 @@ class PostDetailView(generic.DetailView):
         return context
 
 
+# 게시글 수정
 class PostUpdateView(generic.UpdateView):
     model = Post
     form_class = PostUploadForm
     template_name = "post_update.html"
 
 
+# 게시글 삭제
 class PostDeleteView(generic.DeleteView):
     model = Post
     success_url = reverse_lazy("posts:post_list")
@@ -58,6 +62,7 @@ class PostDeleteView(generic.DeleteView):
         return redirect(self.get_success_url())
 
 
+# 댓글 작성
 class CommentUploadView(generic.FormView):
     form_class = CommentUploadForm
     template_name = "comment_upload.html"
@@ -74,6 +79,7 @@ class CommentUploadView(generic.FormView):
         return success_url
 
 
+# 댓글 수정
 class CommentUpdateView(generic.UpdateView):
     model = Comment
     form_class = CommentUploadForm
@@ -86,6 +92,7 @@ class CommentUpdateView(generic.UpdateView):
         return success_url
 
 
+# 댓글 삭제
 class CommentDeleteView(generic.DeleteView):
     model = Comment
     context_object_name = "comment"
@@ -105,6 +112,7 @@ class CommentDeleteView(generic.DeleteView):
         return success_url
 
 
+# 게시글 좋아요 등록/취소
 class PostLikeView(generic.View):
     def post(self, request, pk):
         post = get_object_or_404(Post, id=pk)
@@ -117,6 +125,7 @@ class PostLikeView(generic.View):
         return redirect("posts:post_detail", pk=post.id)
 
 
+# 게시글 검색
 class PostSearchView(generic.ListView):
     model = Post
     context_object_name = "search_results"

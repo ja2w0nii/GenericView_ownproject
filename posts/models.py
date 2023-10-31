@@ -14,9 +14,7 @@ class TimeStampedModel(models.Model):
 
 
 class Post(TimeStampedModel):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="post_user"
-    )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="post_user")
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="post_like_users")
     title = models.CharField(verbose_name="게시글 제목", max_length=50)
     content = models.TextField(verbose_name="게시글 내용")
@@ -33,9 +31,7 @@ class Post(TimeStampedModel):
 
 
 class Comment(TimeStampedModel):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comment_user"
-    )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comment_user")
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comment_post")
     comment = models.TextField(verbose_name="댓글 내용")
 

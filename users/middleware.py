@@ -1,8 +1,6 @@
 from django.shortcuts import render
-import jwt
-import requests
-from django.core.exceptions import PermissionDenied
 from http import HTTPStatus
+from django.core.exceptions import PermissionDenied
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError
 

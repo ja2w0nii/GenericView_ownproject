@@ -1,25 +1,26 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponseRedirect
+from django.conf import settings
 from django.urls import reverse_lazy
 from django.views import generic, View
-from django.contrib.auth.views import LogoutView
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.views import LogoutView
 from django.contrib.auth.hashers import check_password
 from rest_framework_simplejwt.views import TokenObtainPairView
 from keycloak import KeycloakOpenID
+from users.admin import UserCreationForm
+from users.models import User
+from users.forms import SigninForm, ProfileUpdateForm
 
 
-from .admin import UserCreationForm
-from .forms import SigninForm, ProfileUpdateForm
-from .models import User
-
-
+# 회원 가입
 class SignupView(generic.CreateView):
     template_name = "signup.html"
     form_class = UserCreationForm
     success_url = reverse_lazy("users:signin")
 
 
+# 로그인
 class CustomTokenObtainPairView(TokenObtainPairView):
     def get(self, request, *args, **kwargs):
         return render(request, "signin.html")
@@ -45,21 +46,16 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 return response
 
         return redirect("users:signin")
+    
 
-
-KEYCLOAK_URL = "http://127.0.0.1:8080"
-KEYCLOAK_REALM = "genericrealm"
-KEYCLOAK_CLIENT_ID = "genericclient"
-KEYCLOAK_CLIENT_SECRET = "n5d5aUFAu2pX5yORXmRwKuPkq9m4iKrn"
-
-
+# 로그인 - Keycloak 연동
 class KeycloakLoginView(View):
     def get(self, request):
         keycloak_openid = KeycloakOpenID(
-            server_url=KEYCLOAK_URL,
-            client_id=KEYCLOAK_CLIENT_ID,
-            realm_name=KEYCLOAK_REALM,
-            client_secret_key=KEYCLOAK_CLIENT_SECRET,
+            server_url=settings.KEYCLOAK_URL,
+            realm_name=settings.KEYCLOAK_REALM,
+            client_id=settings.KEYCLOAK_CLIENT_ID,
+            client_secret_key=settings.KEYCLOAK_CLIENT_SECRET,
         )
 
         # Keycloak 로그인 URL 생성
@@ -76,10 +72,10 @@ class KeycloakLoginView(View):
 class KeycloakCallbackView(View):
     def get(self, request):
         keycloak_openid = KeycloakOpenID(
-            server_url=KEYCLOAK_URL,
-            client_id=KEYCLOAK_CLIENT_ID,
-            realm_name=KEYCLOAK_REALM,
-            client_secret_key=KEYCLOAK_CLIENT_SECRET,
+            server_url=settings.KEYCLOAK_URL,
+            realm_name=settings.KEYCLOAK_REALM,
+            client_id=settings.KEYCLOAK_CLIENT_ID,
+            client_secret_key=settings.KEYCLOAK_CLIENT_SECRET,
         )
 
         username = "genericuser"
@@ -94,6 +90,7 @@ class KeycloakCallbackView(View):
         return response
 
 
+# 로그아웃
 class SignoutView(LogoutView):
     template_name = "home.html"
     next_page = reverse_lazy("users:signin")
@@ -104,6 +101,7 @@ class SignoutView(LogoutView):
         return response
 
 
+# 회원 탈퇴
 class UnregisterView(generic.DeleteView):
     model = User
     template_name = "unregister.html"
@@ -119,17 +117,20 @@ class UnregisterView(generic.DeleteView):
             return response
 
 
+# 프로필 조회
 class ProfileView(generic.DetailView):
     model = User
     template_name = "profile.html"
 
 
+# 프로필 수정
 class ProfileUpdateView(generic.UpdateView):
     model = User
     form_class = ProfileUpdateForm
     template_name = "profile_update.html"
 
 
+# 팔로우 등록/취소
 class FollowView(generic.View):
     def post(self, request, pk):
         user = get_object_or_404(User, id=pk)

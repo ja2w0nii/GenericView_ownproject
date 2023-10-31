@@ -1,6 +1,6 @@
+from pathlib import Path
 from datetime import timedelta
 import os
-from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -15,15 +15,15 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "192.168.50.85"]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+]
 
 # Application definition
 
 INSTALLED_APPS = [
-    # Channels
-    "channels",
+    "channels",  # 실시간 알림
     "chat",
-    # django apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -31,31 +31,26 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
-    # cors
-    "corsheaders",
-    # simpleJWT
-    "rest_framework_simplejwt",
-    # local apps
-    "users",
-    "posts",
-    # allauth apps
-    "allauth",
+    "rest_framework_simplejwt",  # simpleJWT
+    "allauth",  # allauth apps
     "allauth.account",
     "allauth.socialaccount",
-    # Keycloak
-    "allauth.socialaccount.providers.keycloak",
+    # apps
+    "users",
+    "posts",
+    "detection",
 ]
 
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": [  # 기본적인 view 접근 권한 지정
+    "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
     ],
-    "DEFAULT_AUTHENTICATION_CLASSES": [  # session 혹은 token을 인증 할 클래스 설정
+    "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
-    "DEFAULT_PARSER_CLASSES": [  # request.data 속성에 액세스 할 때 사용되는 파서 지정
+    "DEFAULT_PARSER_CLASSES": [
         "rest_framework.parsers.JSONParser",
         "rest_framework.parsers.FormParser",
         "rest_framework.parsers.MultiPartParser",
@@ -63,8 +58,6 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
-    # cors
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -72,11 +65,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # 로그인 여부 확인
-    "users.middleware.JsonWebTokenMiddleWare",
+    "users.middleware.JsonWebTokenMiddleWare",  # 로그인 여부 확인
 ]
-
-CORS_ORIGIN_WHITELIST = ["http://127.0.0.1:8000", "http://192.168.50.85"]
 
 ROOT_URLCONF = "genericview.urls"
 
@@ -101,27 +91,47 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "genericview.wsgi.application"
-ASGI_APPLICATION = "genericview.routing.application"
+ASGI_APPLICATION = "genericview.asgi.application"
 
+# 실시간 알림
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    # "default": {
-    #     "ENGINE": "django.db.backends.mysql",
-    #     "NAME": "generic",
-    #     "USER": "root",
-    #     "PASSWORD": "dkapflzksh0829!",
-    #     "HOST": "localhost",
-    #     "PORT": "3306",
-    # }
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+MYSQL_DB = os.environ.get("MYSQL_DB", "")
+if MYSQL_DB:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": MYSQL_DB,
+            "USER": os.environ.get("MYSQL_USER", ""),
+            "PASSWORD": os.environ.get("MYSQL_PASSWORD", ""),
+            "HOST": os.environ.get("MYSQL_HOST", ""),
+            "PORT": os.environ.get("MYSQL_PORT", ""),
+            "OPTIONS": {
+                "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+                "connect_timeout": 60,
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
+CORS_ORIGIN_WHITELIST = ["http://127.0.0.1:8888",]
+CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -151,15 +161,19 @@ TIME_ZONE = "Asia/Seoul"
 
 USE_I18N = True
 
-USE_TZ = True
+USE_L10N = True
+
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
-# STATIC_ROOT = BASE_DIR / "static"
+STATIC_URL = "static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+STATIC_ROOT = BASE_DIR / "collected_static"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -169,12 +183,9 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
-# user model
 AUTH_USER_MODEL = "users.User"
 
-
-# simpleJWT
+# JWT 인증
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
@@ -201,41 +212,16 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
 
-
-# allauth
-SITE_ID = 1
-
 LOGIN_REDIRECT_URL = "/"
-# LOGOUT_REDIRECT_URL = "/users/signin"
+LOGOUT_REDIRECT_URL = "/users/signin"
 
 # SESSION_COOKIE_AGE = 7200
 
-AUTHENTICATION_BACKENDS = (
-    "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
-)
+# Django Allauth
+SITE_ID = 1
 
-
-# keycloak
-SOCIALACCOUNT_PROVIDERS = {
-    "keycloak": {
-        "KEYCLOAK_URL": "http://127.0.0.1:8080",
-        "KEYCLOAK_REALM": "genericrealm",
-        "KEYCLOAK_CLIENT_ID": "genericclient",
-        "KEYCLOAK_CLIENT_SECRET": "n5d5aUFAu2pX5yORXmRwKuPkq9m4iKrn",
-        "KEYCLOAK_OIDC_ENDPOINT": "http://127.0.0.1:8080/realms/genericrealm/protocol/openid-connect",
-        "KEYCLOAK_ACCESS_TOKEN_URL": "http://127.0.0.1:8080/realms/genericrealm/protocol/openid-connect/token",
-        "KEYCLOAK_ID_TOKEN_URL": "http://127.0.0.1:8080/realms/genericrealm/protocol/openid-connect/token",
-    },
-}
-
-
-# channels
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}
+# Keycloak 로그인 연동
+KEYCLOAK_URL = "http://127.0.0.1:8080"
+KEYCLOAK_REALM = "genericrealm"
+KEYCLOAK_CLIENT_ID = "genericclient"
+KEYCLOAK_CLIENT_SECRET = "n5d5aUFAu2pX5yORXmRwKuPkq9m4iKrn"
